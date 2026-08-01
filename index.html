@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動漫最終會取代傳統閱讀嗎？</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
+            --red-text: #c0392b;
+            --red-bg: #fadbd8;
+            --blue-text: #2980b9;
+            --orange-text: #d35400;
+            --orange-bg: #fdebd0;
+        }
+
+        body {
+            font-family: 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            font-size: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 26px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .speaker {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-right: 8px;
+        }
+
+        /* 詞彙高亮樣式 */
+        .word-red {
+            color: var(--red-text);
+            background-color: var(--red-bg);
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .word-blue {
+            color: var(--blue-text);
+            cursor: pointer;
+            border-bottom: 1px dashed var(--blue-text);
+            padding: 0 2px;
+            transition: background-color 0.2s;
+        }
+        .word-blue:hover { background-color: #ebf5fb; }
+
+        .word-orange {
+            color: var(--orange-text);
+            background-color: var(--orange-bg);
+            cursor: pointer;
+            border-bottom: 1px dashed var(--orange-text);
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .word-orange:hover { background-color: #f8c471; }
+
+        /* 點擊彈窗樣式 */
+        #tooltip {
+            position: absolute;
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 1000;
+            line-height: 1.4;
+            max-width: 250px;
+            text-align: center;
+        }
+        
+        #tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-py { color: #f1c40f; font-weight: bold; margin-bottom: 4px; display: block; }
+        .tooltip-en { font-style: italic; }
+        
+        .instruction {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            font-size: 14px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📖 動漫最終會取代傳統閱讀嗎？</h1>
+    
+    <div class="instruction">
+        <strong>💡 閱讀任務提示：</strong><br>
+        1. <span class="word-red">紅色螢光筆</span>標註的是寫作必備的「邏輯連接詞」。<br>
+        2. 點擊 <span class="word-orange" style="border-bottom:none">橙色詞塊</span> (IB高級詞彙) 和 <span class="word-blue" style="border-bottom:none">藍色詞彙</span>，可以查看拼音與英文翻譯。
+    </div>
+
+    <!-- 原始文本放置區，JS 會自動掃描並替換顏色 -->
+    <div id="article-content">
+        <p><span class="speaker">主持人小明：</span>歡迎收聽今天的校園文化訪談節目。近年來，動漫的發展速度非常快。從周邊商品到展覽，動漫幾乎已經融入了許多年輕人生活的每一個方面。因此，許多人開始思考一個問題：未來動漫會不會完全取代傳統閱讀？今天我們邀請到了語文老師王老師，一起來聊聊這個熱門話題。</p>
+        
+        <p><span class="speaker">王老師：</span>謝謝邀請。我認為這是一個非常值得討論的問題，因為娛樂媒體的發展正在改變我們的學習和放鬆方式。</p>
+        
+        <p><span class="speaker">小明：</span>首先，我想請問您，為什麼越來越多的年輕人沉迷動漫，認為它有可能取代傳統閱讀？</p>
+        
+        <p><span class="speaker">王老師：</span>我認為主要有兩個原因。首先，動漫的劇情非常吸引人。過去只能通過文字去想像的畫面和故事，現在都可以通過動畫表現出來。其次，動漫具有很強的社交功能。與看書相比，年輕人無論在哪裡，都能夠使用社交媒體隨時與朋友討論最新的動漫。</p>
+        
+        <p><span class="speaker">小明：</span>的確如此。許多年輕人已經習慣利用動漫來放鬆和娛樂。那麼，這是否意味著傳統閱讀的重要性正在下降呢？</p>
+        
+        <p><span class="speaker">王老師：</span>從某種程度上來說，是的。然而，我認為傳統閱讀在未來仍然不可替代。儘管動漫能夠滿足大部分日常的娛樂需求，但在培養深度思考和想像力時，傳統閱讀仍然表現得更加出色。</p>
+        
+        <p><span class="speaker">小明：</span>您能舉一些例子嗎？</p>
+        
+        <p><span class="speaker">王老師：</span>當然可以。例如，學習歷史、分析社會問題以及提高寫作能力等任務，通常需要更多的專注力、更深的文字理解以及更好的邏輯。在這些方面，傳統書籍仍然是主導地位。</p>
+        
+        <p><span class="speaker">小明：</span>換句話說，動漫更適合休閒放鬆，而書籍更適合學習，是這樣嗎？</p>
+        
+        <p><span class="speaker">王老師：</span>完全正確。此外，長期閱讀書籍通常也比用螢幕看動漫對眼睛更加好。文字閱讀能夠讓人靜下心來，同時減少大腦對視覺的依賴。</p>
+        
+        <p><span class="speaker">小明：</span>近年來動漫作品的質量越來越高。有人認為，未來質量高的動漫可能會縮小與傳統文學之間的差距。您怎麼看待這種觀點？</p>
+        
+        <p><span class="speaker">王老師：</span>我認為這種可能性確實存在。隨著動漫的進步，未來也許能夠表現更多複雜的主題。然而，我仍然不認為傳統書籍會消失。</p>
+        
+        <p><span class="speaker">小明：</span>為什麼呢？</p>
+        
+        <p><span class="speaker">王老師：</span>動漫最大的優勢是視覺和娛樂，而書籍最大的優勢是激發個人想像力和知識學習。無論科技如何發展，人們始終需要學習新知識。因此，兩者更有可能形成相輔相成，而不是一個取代另一個。</p>
+        
+        <p><span class="speaker">小明：</span>也就是說，未來的發展可能不是「動漫取代書籍」，而是「動漫與書籍共同發展」？</p>
+        
+        <p><span class="speaker">王老師：</span>沒錯。從目前的情況來看，動漫和書籍發揮不同作用，同時滿足人們在娛樂、社交以及深度學習方面的需求。可以預見的是，在未來相當長的一段時間內，這種共存模式仍將持續下去。</p>
+        
+        <p><span class="speaker">小明：</span>最後，如果讓您給年輕人一些建議，您會說什麼？</p>
+        
+        <p><span class="speaker">王老師：</span>我認為最重要的是培養正確的習慣。動漫沒有好壞之分，關鍵在於我們如何分配時間。與其討論動漫是否會取代書籍，不如思考如何利用這兩種工具，既能享受樂趣，又能提升自己的知識和生活質量。</p>
+        
+        <p><span class="speaker">小明：</span>非常感謝王老師接受我們的採訪。聽眾朋友們，對於「動漫最終會取代傳統閱讀嗎」這個問題，你們有什麼看法呢？歡迎繼續思考和討論。我們下期節目再見。</p>
+    </div>
+
+    <!-- 提示框 -->
+    <div id="tooltip"></div>
+
+    <script>
+        // 藍色詞彙庫 (點擊顯示拼音翻譯)
+        const dictBlue = {
+            "周邊商品": ["zhōu biān shāng pǐn", "merchandise"], "表現出來": ["biǎo xiàn chū lái", "express / show"],
+            "社交功能": ["shè jiāo gōng néng", "social function"], "持續下去": ["chí xù xià qù", "continue"],
+            "深度學習": ["shēn dù xué xí", "deep learning"], "相當長的": ["xiāng dāng cháng de", "quite long"], 
+            "共存模式": ["gòng cún mó shì", "coexistence model"], "吸引人": ["xī yǐn rén", "attractive"],
+            "意味著": ["yì wèi zhe", "mean / imply"], "想像力": ["xiǎng xiàng lì", "imagination"],
+            "專注力": ["zhuān zhù lì", "concentration"], "靜下心來": ["jìng xià xīn lái", "calm down"],
+            "可能性": ["kě néng xìng", "possibility"], "訪談": ["fǎng tán", "interview"],
+            "速度": ["sù dù", "speed"], "展覽": ["zhǎn lǎn", "exhibition"],
+            "幾乎": ["jī hū", "almost"], "融入": ["róng rù", "integrate into"],
+            "邀請": ["yāo qǐng", "invite"], "熱門": ["rè mén", "popular / hot"],
+            "值得": ["zhí de", "worth"], "討論": ["tǎo lùn", "discuss"],
+            "娛樂": ["yú lè", "entertainment"], "媒體": ["méi tǐ", "media"],
+            "放鬆": ["fàng sōng", "relax"], "沈迷": ["chén mí", "addicted to / indulge in"],
+            "劇情": ["jù qíng", "plot"], "通過": ["tōng guò", "through / by means of"],
+            "想像": ["xiǎng xiàng", "imagine"], "具有": ["jù yǒu", "possess / have"],
+            "隨時": ["suí shí", "at any time"], "習慣": ["xí guàn", "habit / be used to"],
+            "利用": ["lì yòng", "utilize / use"], "是否": ["shì fǒu", "whether or not"],
+            "下降": ["xià jiàng", "decline / decrease"], "仍然": ["réng rán", "still"],
+            "滿足": ["mǎn zú", "satisfy"], "需求": ["xū qiú", "need / demand"],
+            "培養": ["péi yǎng", "cultivate"], "深度": ["shēn dù", "depth"],
+            "思考": ["sī kǎo", "thinking / ponder"], "出色": ["chū sè", "outstanding / excellent"],
+            "分析": ["fēn xī", "analyze"], "邏輯": ["luó jí", "logic"],
+            "長期": ["cháng qī", "long-term"], "減少": ["jiǎn shǎo", "reduce"],
+            "視覺": ["shì jué", "vision / visual"], "依賴": ["yī lài", "dependence / rely on"],
+            "質量": ["zhì liàng", "quality"], "縮小": ["suō xiǎo", "narrow / reduce"],
+            "差距": ["chā jù", "gap"], "看待": ["kàn dài", "view / look upon"],
+            "複雜": ["fù zá", "complex"], "消失": ["xiāo shī", "disappear"],
+            "優勢": ["yōu shì", "advantage"], "激發": ["jī fā", "stimulate / inspire"],
+            "如何": ["rú hé", "how"], "兩者": ["liǎng zhě", "both / the two"],
+            "共同": ["gòng tóng", "common / together"], "發揮": ["fā huī", "bring into play / exert"],
+            "分配": ["fēn pèi", "allocate / distribute"], "採訪": ["cǎi fǎng", "interview"],
+            "聽眾": ["tīng zhòng", "audience / listeners"], "繼續": ["jì xù", "continue"],
+            "強": ["qiáng", "strong"], "深": ["shēn", "deep"], 
+            "仍": ["réng", "still"], "將": ["jiāng", "will"]
+        };
+
+        // 橙色詞彙庫 (高級詞彙，帶翻譯)
+        const dictOrange = {
+            "從目前的情況來看": ["cóng mù qián de qíng kuàng lái kàn", "judging from the current situation"],
+            "從某種程度上來說": ["cóng mǒu zhǒng chéng dù shàng lái shuō", "to some extent"],
+            "可以預見的是": ["kě yǐ yù jiàn de shì", "it is foreseeable that"],
+            "不可替代": ["bù kě tì dài", "irreplaceable"],
+            "的確如此": ["dí què rú cǐ", "indeed so"],
+            "主導地位": ["zhǔ dǎo dì wèi", "dominant position"],
+            "相輔相成": ["xiāng fǔ xiāng chéng", "complement each other"],
+            "關鍵在於": ["guān jiàn zài yú", "the key lies in"],
+            "近年來": ["jìn nián lái", "in recent years"]
+        };
+
+        // 紅色詞彙庫 (邏輯連詞，僅高亮無彈窗)
+        const listRed = [
+            "因此", "首先", "其次", "與其", "不如", "無論", "然而", "儘管", 
+            "此外", "同時", "隨著", "相比", "與", "但", "既", "又"
+        ];
+
+        // 構建替換陣列並按詞長降序排列 (避免短詞干擾長詞替換)
+        let replacementMap = [];
+        for (let word in dictOrange) replacementMap.push({word: word, type: "orange", py: dictOrange[word][0], en: dictOrange[word][1]});
+        for (let word of listRed) replacementMap.push({word: word, type: "red"});
+        for (let word in dictBlue) replacementMap.push({word: word, type: "blue", py: dictBlue[word][0], en: dictBlue[word][1]});
+        
+        replacementMap.sort((a, b) => b.word.length - a.word.length);
+
+        // 替換文本
+        let contentDiv = document.getElementById('article-content');
+        let htmlContent = contentDiv.innerHTML;
+
+        replacementMap.forEach(item => {
+            // 正規表達式：確保只替換非 HTML 標籤內的純文字
+            const regex = new RegExp(item.word + "(?![^<]*>)", "g");
+            
+            if (item.type === "red") {
+                htmlContent = htmlContent.replace(regex, `<span class="word-red">${item.word}</span>`);
+            } else {
+                htmlContent = htmlContent.replace(regex, `<span class="word-${item.type}" onclick="showTooltip(event, '${item.py}', '${item.en}')">${item.word}</span>`);
+            }
+        });
+        
+        contentDiv.innerHTML = htmlContent;
+
+        // 彈窗邏輯
+        const tooltip = document.getElementById('tooltip');
+
+        function showTooltip(event, py, en) {
+            event.stopPropagation();
+            tooltip.innerHTML = `<span class="tooltip-py">${py}</span><span class="tooltip-en">${en}</span>`;
+            
+            const rect = event.target.getBoundingClientRect();
+            let topPos = rect.top + window.scrollY - tooltip.offsetHeight - 10;
+            
+            // 防止彈窗超出上方螢幕
+            if (topPos < window.scrollY) {
+                topPos = rect.bottom + window.scrollY + 10;
+            }
+
+            tooltip.style.left = Math.max(10, rect.left + window.scrollX - (tooltip.offsetWidth / 2) + (rect.width / 2)) + 'px';
+            tooltip.style.top = topPos + 'px';
+            tooltip.classList.add('visible');
+        }
+
+        // 點擊空白處隱藏彈窗
+        document.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('word-blue') && !e.target.classList.contains('word-orange')) {
+                tooltip.classList.remove('visible');
+            }
+        });
+    </script>
+</body>
+</html>
