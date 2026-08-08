@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>動漫最終會取代傳統閱讀嗎？</title>
+    <title>互動閱讀：動漫最終會取代傳統閱讀嗎？</title>
     <style>
         :root {
             --bg-color: #f8f9fa;
@@ -20,7 +20,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.8;
-            max-width: 800px;
+            max-width: 1200px; /* 加寬以容納右側欄 */
             margin: 0 auto;
             padding: 30px 20px;
             font-size: 18px;
@@ -35,6 +35,68 @@
             margin-bottom: 30px;
         }
 
+        .instruction {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            font-size: 14px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        /* 佈局容器 */
+        .layout-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .article-col {
+            flex: 1 1 65%;
+            min-width: 300px;
+        }
+
+        .sidebar-col {
+            flex: 1 1 30%;
+            min-width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            align-self: flex-start;
+        }
+
+        .bottom-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        .vocab-box {
+            flex: 1 1 45%;
+            min-width: 250px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        /* 音訊播放器 */
+        audio {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
         p {
             margin-bottom: 20px;
             text-align: justify;
@@ -46,7 +108,7 @@
             margin-right: 8px;
         }
 
-        /* 詞彙高亮樣式 */
+        /* 原有文本詞彙高亮樣式 */
         .word-red {
             color: var(--red-text);
             background-color: var(--red-bg);
@@ -76,7 +138,39 @@
         }
         .word-orange:hover { background-color: #f8c471; }
 
-        /* 點擊彈窗樣式 */
+        /* 詞彙列表樣式 (互動展開) */
+        .vocab-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .vocab-list li {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+        }
+        .vocab-list li:hover {
+            background-color: #f9f9f9;
+        }
+        .vocab-details {
+            display: none;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f4f7f6;
+            border-left: 3px solid #bdc3c7;
+            font-size: 15px;
+            line-height: 1.4;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .list-py { color: #d35400; font-weight: bold; display: block; margin-bottom: 2px; }
+        .list-en { color: #7f8c8d; font-style: italic; }
+
+        /* 原有點擊彈窗樣式 */
         #tooltip {
             position: absolute;
             background: #2c3e50;
@@ -94,23 +188,12 @@
             max-width: 250px;
             text-align: center;
         }
-        
         #tooltip.visible {
             opacity: 1;
             transform: translateY(0);
         }
-
         .tooltip-py { color: #f1c40f; font-weight: bold; margin-bottom: 4px; display: block; }
         .tooltip-en { font-style: italic; }
-        
-        .instruction {
-            background-color: #fff3cd;
-            border-left: 5px solid #ffc107;
-            padding: 15px;
-            font-size: 14px;
-            margin-bottom: 30px;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -119,56 +202,66 @@
     
     <div class="instruction">
         <strong>💡 閱讀任務提示：</strong><br>
-        1. <span class="word-red">紅色螢光筆</span>標註的是寫作必備的「邏輯連接詞」。<br>
-        2. 點擊 <span class="word-orange" style="border-bottom:none">橙色詞塊</span> (IB高級詞彙) 和 <span class="word-blue" style="border-bottom:none">藍色詞彙</span>，可以查看拼音與英文翻譯。
+        1. 點擊音訊播放鍵，可以邊聽邊讀。<br>
+        2. 文章內：<span class="word-red">紅色螢光筆</span>為邏輯連接詞。點擊文章內的 <span class="word-orange" style="border-bottom:none">橙色詞塊</span> 和 <span class="word-blue" style="border-bottom:none">藍色詞彙</span> 可查看釋義。<br>
+        3. 詞彙表：點擊右側和下方的分類詞彙，可展開查看拼音與英文翻譯，再點擊即可隱藏。
     </div>
 
-    <!-- 原始文本放置區，JS 會自動掃描並替換顏色 -->
-    <div id="article-content">
-        <p><span class="speaker">主持人小明：</span>歡迎收聽今天的校園文化訪談節目。近年來，動漫的發展速度非常快。從周邊商品到展覽，動漫幾乎已經融入了許多年輕人生活的每一個方面。因此，許多人開始思考一個問題：未來動漫會不會完全取代傳統閱讀？今天我們邀請到了語文老師王老師，一起來聊聊這個熱門話題。</p>
-        
-        <p><span class="speaker">王老師：</span>謝謝邀請。我認為這是一個非常值得討論的問題，因為娛樂媒體的發展正在改變我們的學習和放鬆方式。</p>
-        
-        <p><span class="speaker">小明：</span>首先，我想請問您，為什麼越來越多的年輕人沉迷動漫，認為它有可能取代傳統閱讀？</p>
-        
-        <p><span class="speaker">王老師：</span>我認為主要有兩個原因。首先，動漫的劇情非常吸引人。過去只能通過文字去想像的畫面和故事，現在都可以通過動畫表現出來。其次，動漫具有很強的社交功能。與看書相比，年輕人無論在哪裡，都能夠使用社交媒體隨時與朋友討論最新的動漫。</p>
-        
-        <p><span class="speaker">小明：</span>的確如此。許多年輕人已經習慣利用動漫來放鬆和娛樂。那麼，這是否意味著傳統閱讀的重要性正在下降呢？</p>
-        
-        <p><span class="speaker">王老師：</span>從某種程度上來說，是的。然而，我認為傳統閱讀在未來仍然不可替代。儘管動漫能夠滿足大部分日常的娛樂需求，但在培養深度思考和想像力時，傳統閱讀仍然表現得更加出色。</p>
-        
-        <p><span class="speaker">小明：</span>您能舉一些例子嗎？</p>
-        
-        <p><span class="speaker">王老師：</span>當然可以。例如，學習歷史、分析社會問題以及提高寫作能力等任務，通常需要更多的專注力、更深的文字理解以及更好的邏輯。在這些方面，傳統書籍仍然是主導地位。</p>
-        
-        <p><span class="speaker">小明：</span>換句話說，動漫更適合休閒放鬆，而書籍更適合學習，是這樣嗎？</p>
-        
-        <p><span class="speaker">王老師：</span>完全正確。此外，長期閱讀書籍通常也比用螢幕看動漫對眼睛更加好。文字閱讀能夠讓人靜下心來，同時減少大腦對視覺的依賴。</p>
-        
-        <p><span class="speaker">小明：</span>近年來動漫作品的質量越來越高。有人認為，未來質量高的動漫可能會縮小與傳統文學之間的差距。您怎麼看待這種觀點？</p>
-        
-        <p><span class="speaker">王老師：</span>我認為這種可能性確實存在。隨著動漫的進步，未來也許能夠表現更多複雜的主題。然而，我仍然不認為傳統書籍會消失。</p>
-        
-        <p><span class="speaker">小明：</span>為什麼呢？</p>
-        
-        <p><span class="speaker">王老師：</span>動漫最大的優勢是視覺和娛樂，而書籍最大的優勢是激發個人想像力和知識學習。無論科技如何發展，人們始終需要學習新知識。因此，兩者更有可能形成相輔相成，而不是一個取代另一個。</p>
-        
-        <p><span class="speaker">小明：</span>也就是說，未來的發展可能不是「動漫取代書籍」，而是「動漫與書籍共同發展」？</p>
-        
-        <p><span class="speaker">王老師：</span>沒錯。從目前的情況來看，動漫和書籍發揮不同作用，同時滿足人們在娛樂、社交以及深度學習方面的需求。可以預見的是，在未來相當長的一段時間內，這種共存模式仍將持續下去。</p>
-        
-        <p><span class="speaker">小明：</span>最後，如果讓您給年輕人一些建議，您會說什麼？</p>
-        
-        <p><span class="speaker">王老師：</span>我認為最重要的是培養正確的習慣。動漫沒有好壞之分，關鍵在於我們如何分配時間。與其討論動漫是否會取代書籍，不如思考如何利用這兩種工具，既能享受樂趣，又能提升自己的知識和生活質量。</p>
-        
-        <p><span class="speaker">小明：</span>非常感謝王老師接受我們的採訪。聽眾朋友們，對於「動漫最終會取代傳統閱讀嗎」這個問題，你們有什麼看法呢？歡迎繼續思考和討論。我們下期節目再見。</p>
+    <div class="layout-container">
+        <!-- 左側：文章與音檔 -->
+        <div class="article-col">
+            <!-- 新增音訊播放器 -->
+            <audio controls src="Will_anime_eventually_replace_traditional_reading.mp3">
+                您的瀏覽器不支援音訊播放。
+            </audio>
+
+            <div id="article-content">
+                <p><span class="speaker">主持人小明：</span>歡迎收聽今天的校園文化訪談節目。近年來，動漫的發展速度非常快。從周邊商品到展覽，動漫幾乎已經融入了許多年輕人生活的每一個方面。因此，許多人開始思考一個問題：未來動漫會不會完全取代傳統閱讀？今天我們邀請到了語文老師王老師，一起來聊聊這個熱門話題。</p>
+                <p><span class="speaker">王老師：</span>謝謝邀請。我認為這是一個非常值得討論的問題，因為娛樂媒體的發展正在改變我們的學習和放鬆方式。</p>
+                <p><span class="speaker">小明：</span>首先，我想請問您，為什麼越來越多的年輕人沉迷動漫，認為它有可能取代傳統閱讀？</p>
+                <p><span class="speaker">王老師：</span>我認為主要有兩個原因。首先，動漫的劇情非常吸引人。過去只能通過文字去想像的畫面和故事，現在都可以通過動畫表現出來。其次，動漫具有很強的社交功能。與看書相比，年輕人無論在哪裡，都能夠使用社交媒體隨時與朋友討論最新的動漫。</p>
+                <p><span class="speaker">小明：</span>的確如此。許多年輕人已經習慣利用動漫來放鬆和娛樂。那麼，這是否意味著傳統閱讀的重要性正在下降呢？</p>
+                <p><span class="speaker">王老師：</span>從某種程度上來說，是的。然而，我認為傳統閱讀在未來仍然不可替代。儘管動漫能夠滿足大部分日常的娛樂需求，但在培養深度思考和想像力時，傳統閱讀仍然表現得更加出色。</p>
+                <p><span class="speaker">小明：</span>您能舉一些例子嗎？</p>
+                <p><span class="speaker">王老師：</span>當然可以。例如，學習歷史、分析社會問題以及提高寫作能力等任務，通常需要更多的專注力、更深的文字理解以及更好的邏輯。在這些方面，傳統書籍仍然是主導地位。</p>
+                <p><span class="speaker">小明：</span>換句話說，動漫更適合休閒放鬆，而書籍更適合學習，是這樣嗎？</p>
+                <p><span class="speaker">王老師：</span>完全正確。此外，長期閱讀書籍通常也比用螢幕看動漫對眼睛更加好。文字閱讀能夠讓人靜下心來，同時減少大腦對視覺的依賴。</p>
+                <p><span class="speaker">小明：</span>近年來動漫作品的質量越來越高。有人認為，未來質量高的動漫可能會縮小與傳統文學之間的差距。您怎麼看待這種觀點？</p>
+                <p><span class="speaker">王老師：</span>我認為這種可能性確實存在。隨著動漫的進步，未來也許能夠表現更多複雜的主題。然而，我仍然不認為傳統書籍會消失。</p>
+                <p><span class="speaker">小明：</span>為什麼呢？</p>
+                <p><span class="speaker">王老師：</span>動漫最大的優勢是視覺和娛樂，而書籍最大的優勢是激發個人想像力和知識學習。無論科技如何發展，人們始終需要學習新知識。因此，兩者更有可能形成相輔相成，而不是一個取代另一個。</p>
+                <p><span class="speaker">小明：</span>也就是說，未來的發展可能不是「動漫取代書籍」，而是「動漫與書籍共同發展」？</p>
+                <p><span class="speaker">王老師：</span>沒錯。從目前的情況來看，動漫和書籍發揮不同作用，同時滿足人們在娛樂、社交以及深度學習方面的需求。可以預見的是，在未來相當長的一段時間內，這種共存模式仍將持續下去。</p>
+                <p><span class="speaker">小明：</span>最後，如果讓您給年輕人一些建議，您會說什麼？</p>
+                <p><span class="speaker">王老師：</span>我認為最重要的是培養正確的習慣。動漫沒有好壞之分，關鍵在於我們如何分配時間。與其討論動漫是否會取代書籍，不如思考如何利用這兩種工具，既能享受樂趣，又能提升自己的知識和生活質量。</p>
+                <p><span class="speaker">小明：</span>非常感謝王老師接受我們的採訪。聽眾朋友們，對於「動漫最終會取代傳統閱讀嗎」這個問題，你們有什麼看法呢？歡迎繼續思考和討論。我們下期節目再見。</p>
+            </div>
+        </div>
+
+        <!-- 右側：藍色詞彙清單 -->
+        <div class="sidebar-col">
+            <h3>📘 重點詞彙</h3>
+            <ul id="blue-list" class="vocab-list"></ul>
+        </div>
     </div>
 
-    <!-- 提示框 -->
+    <!-- 下方：橙色和紅色詞彙清單 -->
+    <div class="bottom-section">
+        <div class="vocab-box">
+            <h3>📙 高級詞彙</h3>
+            <ul id="orange-list" class="vocab-list"></ul>
+        </div>
+        <div class="vocab-box">
+            <h3>📕 邏輯連詞</h3>
+            <ul id="red-list" class="vocab-list"></ul>
+        </div>
+    </div>
+
+    <!-- 提示框 (文章內點擊用) -->
     <div id="tooltip"></div>
 
     <script>
-        // 藍色詞彙庫 (點擊顯示拼音翻譯)
+        // 藍色詞彙庫
         const dictBlue = {
             "周邊商品": ["zhōu biān shāng pǐn", "merchandise"], "表現出來": ["biǎo xiàn chū lái", "express / show"],
             "社交功能": ["shè jiāo gōng néng", "social function"], "持續下去": ["chí xù xià qù", "continue"],
@@ -206,7 +299,7 @@
             "仍": ["réng", "still"], "將": ["jiāng", "will"]
         };
 
-        // 橙色詞彙庫 (高級詞彙，帶翻譯)
+        // 橙色詞彙庫 (高級詞彙)
         const dictOrange = {
             "從目前的情況來看": ["cóng mù qián de qíng kuàng lái kàn", "judging from the current situation"],
             "從某種程度上來說": ["cóng mǒu zhǒng chéng dù shàng lái shuō", "to some extent"],
@@ -219,38 +312,70 @@
             "近年來": ["jìn nián lái", "in recent years"]
         };
 
-        // 紅色詞彙庫 (邏輯連詞，僅高亮無彈窗)
-        const listRed = [
-            "因此", "首先", "其次", "與其", "不如", "無論", "然而", "儘管", 
-            "此外", "同時", "隨著", "相比", "與", "但", "既", "又"
-        ];
+        // 紅色詞彙庫 (邏輯連詞 - 補充了拼音和英文以供列表使用)
+        const dictRed = {
+            "因此": ["yīn cǐ", "therefore"], "首先": ["shǒu xiān", "first of all"], 
+            "其次": ["qí cì", "secondly"], "與其": ["yǔ qí", "rather than"], 
+            "不如": ["bù rú", "it would be better to"], "無論": ["wú lùn", "no matter"], 
+            "然而": ["rán ér", "however"], "儘管": ["jǐn guǎn", "although"], 
+            "此外": ["cǐ wài", "in addition / besides"], "同時": ["tóng shí", "at the same time"], 
+            "隨著": ["suí zhe", "along with / as"], "相比": ["xiāng bǐ", "compare"], 
+            "與": ["yǔ", "and / with"], "但": ["dàn", "but"], 
+            "既": ["jì", "both / since"], "又": ["yòu", "and / also"]
+        };
 
-        // 構建替換陣列並按詞長降序排列 (避免短詞干擾長詞替換)
+        // 1. 替換文章文本邏輯 (保持原有邏輯不變)
         let replacementMap = [];
         for (let word in dictOrange) replacementMap.push({word: word, type: "orange", py: dictOrange[word][0], en: dictOrange[word][1]});
-        for (let word of listRed) replacementMap.push({word: word, type: "red"});
+        for (let word in dictRed) replacementMap.push({word: word, type: "red"}); // 文本中僅替換顏色，無彈窗
         for (let word in dictBlue) replacementMap.push({word: word, type: "blue", py: dictBlue[word][0], en: dictBlue[word][1]});
         
         replacementMap.sort((a, b) => b.word.length - a.word.length);
 
-        // 替換文本
         let contentDiv = document.getElementById('article-content');
         let htmlContent = contentDiv.innerHTML;
 
         replacementMap.forEach(item => {
-            // 正規表達式：確保只替換非 HTML 標籤內的純文字
             const regex = new RegExp(item.word + "(?![^<]*>)", "g");
-            
             if (item.type === "red") {
                 htmlContent = htmlContent.replace(regex, `<span class="word-red">${item.word}</span>`);
             } else {
                 htmlContent = htmlContent.replace(regex, `<span class="word-${item.type}" onclick="showTooltip(event, '${item.py}', '${item.en}')">${item.word}</span>`);
             }
         });
-        
         contentDiv.innerHTML = htmlContent;
 
-        // 彈窗邏輯
+        // 2. 生成側邊與下方詞彙列表邏輯
+        function renderVocabList(dict, elementId, colorClass) {
+            const ul = document.getElementById(elementId);
+            for (let word in dict) {
+                const py = dict[word][0];
+                const en = dict[word][1];
+                
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="${colorClass}" style="border:none;">${word}</span>
+                    <div class="vocab-details">
+                        <span class="list-py">${py}</span>
+                        <span class="list-en">${en}</span>
+                    </div>
+                `;
+                
+                // 點擊切換顯示/隱藏
+                li.onclick = function() {
+                    const details = this.querySelector('.vocab-details');
+                    details.style.display = (details.style.display === 'block') ? 'none' : 'block';
+                };
+                
+                ul.appendChild(li);
+            }
+        }
+
+        renderVocabList(dictBlue, 'blue-list', 'word-blue');
+        renderVocabList(dictOrange, 'orange-list', 'word-orange');
+        renderVocabList(dictRed, 'red-list', 'word-red');
+
+        // 3. 文章內點擊彈窗邏輯
         const tooltip = document.getElementById('tooltip');
 
         function showTooltip(event, py, en) {
@@ -260,7 +385,6 @@
             const rect = event.target.getBoundingClientRect();
             let topPos = rect.top + window.scrollY - tooltip.offsetHeight - 10;
             
-            // 防止彈窗超出上方螢幕
             if (topPos < window.scrollY) {
                 topPos = rect.bottom + window.scrollY + 10;
             }
@@ -270,7 +394,6 @@
             tooltip.classList.add('visible');
         }
 
-        // 點擊空白處隱藏彈窗
         document.addEventListener('click', function(e) {
             if (!e.target.classList.contains('word-blue') && !e.target.classList.contains('word-orange')) {
                 tooltip.classList.remove('visible');
