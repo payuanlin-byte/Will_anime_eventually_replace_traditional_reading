@@ -20,7 +20,7 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.8;
-            max-width: 1200px; /* 加寬以容納右側欄 */
+            max-width: 1200px;
             margin: 0 auto;
             padding: 30px 20px;
             font-size: 18px;
@@ -44,26 +44,46 @@
             border-radius: 4px;
         }
 
-        /* 佈局容器 */
+        /* 嚴格的左右兩欄佈局 */
         .layout-container {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row; /* 強制左右橫向排列 */
             gap: 30px;
+            align-items: flex-start;
         }
 
+        /* 左側文章區佔 70% */
         .article-col {
-            flex: 1 1 65%;
-            min-width: 300px;
+            flex: 7;
+            min-width: 0; /* 防止內容溢出 */
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
 
+        /* 右側詞彙區佔 30% */
         .sidebar-col {
-            flex: 1 1 30%;
-            min-width: 250px;
+            flex: 3;
+            position: sticky; /* 懸浮固定，滑動時會跟著走 */
+            top: 20px; 
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            align-self: flex-start;
+            max-height: 85vh; /* 限制最大高度 */
+            overflow-y: auto; /* 如果詞彙太多，右欄內部可獨立滾動 */
+        }
+
+        /* 響應式設計：如果用手機看，自動變回上下排列 */
+        @media (max-width: 768px) {
+            .layout-container {
+                flex-direction: column;
+            }
+            .sidebar-col {
+                position: static;
+                max-height: none;
+            }
         }
 
         .bottom-section {
@@ -88,9 +108,9 @@
             color: #2c3e50;
             border-bottom: 2px solid #ecf0f1;
             padding-bottom: 10px;
+            font-size: 18px;
         }
 
-        /* 音訊播放器 */
         audio {
             width: 100%;
             margin-bottom: 20px;
@@ -108,7 +128,6 @@
             margin-right: 8px;
         }
 
-        /* 原有文本詞彙高亮樣式 */
         .word-red {
             color: var(--red-text);
             background-color: var(--red-bg);
@@ -138,7 +157,6 @@
         }
         .word-orange:hover { background-color: #f8c471; }
 
-        /* 詞彙列表樣式 (互動展開) */
         .vocab-list {
             list-style: none;
             padding: 0;
@@ -151,6 +169,7 @@
             cursor: pointer;
             transition: background-color 0.2s;
             border-radius: 4px;
+            font-size: 16px;
         }
         .vocab-list li:hover {
             background-color: #f9f9f9;
@@ -170,7 +189,6 @@
         .list-py { color: #d35400; font-weight: bold; display: block; margin-bottom: 2px; }
         .list-en { color: #7f8c8d; font-style: italic; }
 
-        /* 原有點擊彈窗樣式 */
         #tooltip {
             position: absolute;
             background: #2c3e50;
@@ -207,10 +225,11 @@
         3. 詞彙表：點擊右側和下方的分類詞彙，可展開查看拼音與英文翻譯，再點擊即可隱藏。
     </div>
 
+    <!-- 左右分欄的容器 -->
     <div class="layout-container">
-        <!-- 左側：文章與音檔 -->
+        
+        <!-- 左側：音檔 + 文章主體 -->
         <div class="article-col">
-            <!-- 新增音訊播放器 -->
             <audio controls src="Will_anime_eventually_replace_traditional_reading.mp3">
                 您的瀏覽器不支援音訊播放。
             </audio>
@@ -240,28 +259,27 @@
 
         <!-- 右側：藍色詞彙清單 -->
         <div class="sidebar-col">
-            <h3>📘 重點詞彙</h3>
+            <h3>📘 重點詞彙 (點擊展開)</h3>
             <ul id="blue-list" class="vocab-list"></ul>
         </div>
     </div>
 
-    <!-- 下方：橙色和紅色詞彙清單 -->
+    <!-- 下半部：橙色與紅色詞彙 -->
     <div class="bottom-section">
         <div class="vocab-box">
-            <h3>📙 高級詞彙</h3>
+            <h3>📙 高級詞彙 (點擊展開)</h3>
             <ul id="orange-list" class="vocab-list"></ul>
         </div>
         <div class="vocab-box">
-            <h3>📕 邏輯連詞</h3>
+            <h3>📕 邏輯連詞 (點擊展開)</h3>
             <ul id="red-list" class="vocab-list"></ul>
         </div>
     </div>
 
-    <!-- 提示框 (文章內點擊用) -->
+    <!-- 提示框 -->
     <div id="tooltip"></div>
 
     <script>
-        // 藍色詞彙庫
         const dictBlue = {
             "周邊商品": ["zhōu biān shāng pǐn", "merchandise"], "表現出來": ["biǎo xiàn chū lái", "express / show"],
             "社交功能": ["shè jiāo gōng néng", "social function"], "持續下去": ["chí xù xià qù", "continue"],
@@ -299,7 +317,6 @@
             "仍": ["réng", "still"], "將": ["jiāng", "will"]
         };
 
-        // 橙色詞彙庫 (高級詞彙)
         const dictOrange = {
             "從目前的情況來看": ["cóng mù qián de qíng kuàng lái kàn", "judging from the current situation"],
             "從某種程度上來說": ["cóng mǒu zhǒng chéng dù shàng lái shuō", "to some extent"],
@@ -312,7 +329,6 @@
             "近年來": ["jìn nián lái", "in recent years"]
         };
 
-        // 紅色詞彙庫 (邏輯連詞 - 補充了拼音和英文以供列表使用)
         const dictRed = {
             "因此": ["yīn cǐ", "therefore"], "首先": ["shǒu xiān", "first of all"], 
             "其次": ["qí cì", "secondly"], "與其": ["yǔ qí", "rather than"], 
@@ -324,10 +340,9 @@
             "既": ["jì", "both / since"], "又": ["yòu", "and / also"]
         };
 
-        // 1. 替換文章文本邏輯 (保持原有邏輯不變)
         let replacementMap = [];
         for (let word in dictOrange) replacementMap.push({word: word, type: "orange", py: dictOrange[word][0], en: dictOrange[word][1]});
-        for (let word in dictRed) replacementMap.push({word: word, type: "red"}); // 文本中僅替換顏色，無彈窗
+        for (let word in dictRed) replacementMap.push({word: word, type: "red"}); 
         for (let word in dictBlue) replacementMap.push({word: word, type: "blue", py: dictBlue[word][0], en: dictBlue[word][1]});
         
         replacementMap.sort((a, b) => b.word.length - a.word.length);
@@ -345,7 +360,6 @@
         });
         contentDiv.innerHTML = htmlContent;
 
-        // 2. 生成側邊與下方詞彙列表邏輯
         function renderVocabList(dict, elementId, colorClass) {
             const ul = document.getElementById(elementId);
             for (let word in dict) {
@@ -361,7 +375,6 @@
                     </div>
                 `;
                 
-                // 點擊切換顯示/隱藏
                 li.onclick = function() {
                     const details = this.querySelector('.vocab-details');
                     details.style.display = (details.style.display === 'block') ? 'none' : 'block';
@@ -375,7 +388,6 @@
         renderVocabList(dictOrange, 'orange-list', 'word-orange');
         renderVocabList(dictRed, 'red-list', 'word-red');
 
-        // 3. 文章內點擊彈窗邏輯
         const tooltip = document.getElementById('tooltip');
 
         function showTooltip(event, py, en) {
